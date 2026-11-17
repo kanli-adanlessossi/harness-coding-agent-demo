@@ -52,8 +52,11 @@ def load_tasks(selected: list[str] | None) -> list[dict]:
 
 
 def run_claude(workspace: Path, prompt: str, model: str | None, max_budget: float, timeout: int) -> dict:
+    # Resolve the full path: on Windows the npm install is a claude.cmd shim, which
+    # subprocess does not find by bare name. The prompt goes via stdin because a .cmd
+    # shim runs through cmd.exe, which mangles newlines and quotes in arguments.
     cmd = [
-        "claude", "-p", prompt,
+        shutil.which("claude") or "claude", "-p",
         "--output-format", "json",
         "--permission-mode", "acceptEdits",
         "--max-budget-usd", str(max_budget),
@@ -64,7 +67,8 @@ def run_claude(workspace: Path, prompt: str, model: str | None, max_budget: floa
         cmd += ["--model", model]
     env = {k: v for k, v in os.environ.items() if k not in SCRUBBED_ENV}
     try:
-        proc = subprocess.run(cmd, cwd=workspace, capture_output=True, text=True, timeout=timeout, env=env)
+        proc = subprocess.run(cmd, cwd=workspace, input=prompt, capture_output=True, text=True,
+                              encoding="utf-8", timeout=timeout, env=env)
     except FileNotFoundError:
         raise SystemExit("Claude Code CLI not found. Install it: npm install -g @anthropic-ai/claude-code")
     except subprocess.TimeoutExpired:
