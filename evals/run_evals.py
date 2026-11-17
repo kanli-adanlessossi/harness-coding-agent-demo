@@ -51,7 +51,16 @@ def load_tasks(selected: list[str] | None) -> list[dict]:
     return tasks
 
 
-def run_claude(workspace: Path, prompt: str, model: str | None, max_budget: float, timeout: int) -> dict:
+def baseline_allowed_tools(workspace: Path) -> list[str]:
+    """The baseline's permissions.allow list. Claude Code ignores it in untrusted
+    folders (every fresh eval workspace is one), so it is passed via --allowedTools."""
+    settings = workspace / ".claude" / "settings.json"
+    if not settings.exists():
+        return []
+    return json.loads(settings.read_text(encoding="utf-8")).get("permissions", {}).get("allow", [])
+
+
+def claude_command(workspace: Path, model: str | None, max_budget: float) -> list[str]:
     # Resolve the full path: on Windows the npm install is a claude.cmd shim, which
     # subprocess does not find by bare name. The prompt goes via stdin because a .cmd
     # shim runs through cmd.exe, which mangles newlines and quotes in arguments.
@@ -63,8 +72,16 @@ def run_claude(workspace: Path, prompt: str, model: str | None, max_budget: floa
         "--mcp-config", str(workspace / ".mcp.json"),
         "--strict-mcp-config",
     ]
+    allowed = baseline_allowed_tools(workspace)
+    if allowed:
+        cmd += ["--allowedTools", ",".join(allowed)]
     if model:
         cmd += ["--model", model]
+    return cmd
+
+
+def run_claude(workspace: Path, prompt: str, model: str | None, max_budget: float, timeout: int) -> dict:
+    cmd = claude_command(workspace, model, max_budget)
     env = {k: v for k, v in os.environ.items() if k not in SCRUBBED_ENV}
     try:
         proc = subprocess.run(cmd, cwd=workspace, input=prompt, capture_output=True, text=True,

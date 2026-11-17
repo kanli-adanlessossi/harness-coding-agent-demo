@@ -39,6 +39,21 @@ def test_compare_flags_regression(tmp_path):
     assert "**Worse:**" in res.stdout
 
 
+def test_claude_command_passes_baseline_allow_list(tmp_path):
+    # Fresh eval workspaces are untrusted, so Claude Code ignores settings.json
+    # permissions.allow; the runner must pass them on the command line instead.
+    sys.path.insert(0, str(ROOT / "evals"))
+    from run_evals import claude_command
+    from workspace import create_workspace
+
+    ws = create_workspace(tmp_path / "ws")
+    allow = json.loads((ws / ".claude" / "settings.json").read_text())["permissions"]["allow"]
+    cmd = claude_command(ws, model=None, max_budget=1.0)
+    allowed = cmd[cmd.index("--allowedTools") + 1].split(",")
+    assert allowed == allow
+    assert "mcp__post-docs__search_docs" in allowed
+
+
 def test_workspace_has_baseline_and_mcp_config(tmp_path):
     ws = tmp_path / "ws"
     assert run(ROOT / "scripts" / "new_workspace.py", ws).returncode == 0

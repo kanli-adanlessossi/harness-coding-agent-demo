@@ -84,6 +84,13 @@ def main() -> None:
     parser.add_argument("--fail-on-regression", action="store_true")
     args = parser.parse_args()
 
+    missing = [p for p in (args.base, args.head) if not Path(p).is_file()]
+    if missing:
+        parser.error(
+            f"report not found: {', '.join(missing)}. "
+            "Create it first with: python evals/run_evals.py --agent claude --out <path>"
+        )
+
     base = json.loads(Path(args.base).read_text(encoding="utf-8"))
     head = json.loads(Path(args.head).read_text(encoding="utf-8"))
     md, regression = compare(base, head)

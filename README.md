@@ -25,7 +25,7 @@ tests/                     tests for the hook, the MCP server and the eval harne
 
 ```bash
 pip install -r requirements.txt
-make test      # 37 tests: hook, MCP server, eval harness, sample service
+make test      # 38 tests: hook, MCP server, eval harness, sample service
 make sanity    # every task solvable by the reference, every check fails on untouched code
 ```
 
