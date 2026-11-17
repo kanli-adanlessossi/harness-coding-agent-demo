@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys
 from pathlib import Path
 
 THRESHOLD = 0.10
@@ -74,6 +75,8 @@ def compare(base: dict, head: dict) -> tuple[str, bool]:
 
 
 def main() -> None:
+    # Markdown output contains non-ASCII (→, –); Windows pipes default to cp1252.
+    sys.stdout.reconfigure(encoding="utf-8")
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("base")
     parser.add_argument("head")

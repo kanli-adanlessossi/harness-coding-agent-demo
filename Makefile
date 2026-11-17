@@ -1,4 +1,4 @@
-PY ?= python3
+PY ?= python
 WS ?= $(HOME)/post-agent-demo-ws
 
 .PHONY: install test sanity workspace evals compare clean

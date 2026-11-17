@@ -170,6 +170,8 @@ def to_markdown(report: dict) -> str:
 
 
 def main() -> None:
+    # Markdown output contains non-ASCII (→, –); Windows pipes default to cp1252.
+    sys.stdout.reconfigure(encoding="utf-8")
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--agent", choices=["claude", "reference", "none"], default="claude")
     parser.add_argument("--baseline", default=str(DEFAULT_BASELINE), help="path to an agent-baseline folder")

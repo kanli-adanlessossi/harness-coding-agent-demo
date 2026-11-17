@@ -10,7 +10,7 @@ COMPARE = ROOT / "evals" / "compare.py"
 
 
 def run(*args):
-    return subprocess.run([sys.executable, *map(str, args)], capture_output=True, text=True, cwd=ROOT)
+    return subprocess.run([sys.executable, *map(str, args)], capture_output=True, text=True, encoding="utf-8", cwd=ROOT)
 
 
 def test_reference_solutions_pass_every_task(tmp_path):
