@@ -1,0 +1,6 @@
+id: fix-tariff-boundary
+skill: fix-bug
+tests_capability: test-first bug fixing with business-rule lookup
+prompt: |
+  A customer complains: she sent a parcel of exactly 2 kg and was charged
+  CHF 9.70. Please investigate and fix it.

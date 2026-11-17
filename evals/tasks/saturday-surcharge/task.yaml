@@ -1,0 +1,7 @@
+id: saturday-surcharge
+skill: rest-endpoint
+tests_capability: using the MCP server for knowledge that is not in the repo
+prompt: |
+  Product wants customers to be able to request Saturday delivery when they
+  register a parcel. Implement it according to the tariff guideline, including
+  the correct price.

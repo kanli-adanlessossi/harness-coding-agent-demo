@@ -1,0 +1,6 @@
+id: validate-input
+skill: rest-endpoint
+tests_capability: looking up validation rules instead of inventing them
+prompt: |
+  We get garbage parcel registrations. Add input validation for creating parcels
+  according to our internal validation rules. Invalid input must be rejected.

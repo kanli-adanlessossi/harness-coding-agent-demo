@@ -1,0 +1,30 @@
+name: CI
+
+# Fast, free, deterministic: no LLM calls.
+# Tests the hook, the MCP server and the eval harness itself
+# (every task solvable by the reference, every check failing on untouched code).
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - name: Unit tests (guard hook, MCP server, eval harness, sample service)
+        run: python -m pytest -q
+      - name: Eval harness sanity check
+        run: |
+          python evals/run_evals.py --agent reference --expect all-pass --md "$GITHUB_STEP_SUMMARY"
+          python evals/run_evals.py --agent none --expect all-fail

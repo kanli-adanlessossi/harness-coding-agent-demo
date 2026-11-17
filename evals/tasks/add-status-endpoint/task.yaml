@@ -1,0 +1,7 @@
+id: add-status-endpoint
+skill: rest-endpoint
+tests_capability: following conventions for a new endpoint
+prompt: |
+  Add an endpoint GET /parcels/{parcel_id}/status that returns the parcel id and
+  its current status as JSON: {"id": <id>, "status": "<status>"}.
+  Follow our API conventions for unknown parcels.
